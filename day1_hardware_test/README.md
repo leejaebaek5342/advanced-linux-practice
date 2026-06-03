@@ -15,7 +15,7 @@
 | buzzer.c | 부저 on/off 및 음악 재생 테스트 |
 | cds.c | PCF8591 I2C 조도센서 값 읽기 테스트 |
 | segment.c | SN74LS47N BCD 제어, 0~9 숫자 출력 테스트 |
-| temperature.c | PCF8591 AIN1 온도센서 값 읽기 테스트 (추가기능) |
+| temperature.c | PCF8591 I2C 온도센서 값 읽기 테스트 (추가기능) |
 
 ## 핀 연결
 | 장치 | BCM | wiringPi |
