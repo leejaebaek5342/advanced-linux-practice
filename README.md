@@ -4,6 +4,20 @@
 Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격 장치 제어 시스템을 구현했습니다.
 클라이언트에서 명령을 전송하면 서버가 명령을 파싱하여 각 장치를 제어합니다.
 
+## 빌드 및 실행
+    # 라이브러리 + 서버(라즈베리파이로 자동 전송) / 클라이언트 빌드
+    make
+
+    # 라즈베리파이에서 서버 실행
+    sudo ./server
+
+    # 우분투에서 클라이언트 실행
+    ./client \[라즈베리파이 IP\]
+
+    # 데몬 로그 확인
+    sudo tail -f /var/log/syslog | grep device_server
+    
+
 ## 장치 제어 구현 기능
 
 ### LED
@@ -66,7 +80,6 @@ Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격
 | Day 1 | 하드웨어 단독 테스트 (LED, 부저, 조도센서, 7세그먼트, 온도센서) |
 | Day 2 | 장치별 공유 라이브러리 생성, dlopen/dlsym 동적 로딩, TCP 서버/클라이언트 기본 구현 |
 | Day 3 | 서버 데몬화, 뮤텍스 적용, 코드 최적화, 시그널 처리 |
-| Day 4 | 최종 문서 작성 |
 
 ## 폴더 구성
 | 폴더 | 설명 |
@@ -74,7 +87,6 @@ Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격
 | day1_hardware_test/ | 각 장치 단독 테스트 소스코드 |
 | day2_library_tcp/ | 공유 라이브러리 + TCP 기본 구현 |
 | day3_daemon_refactoring/ | 데몬화 + 코드 최적화 |
-| day4_docs/ | 최종 문서 |
 | final_project/ | 제출용 최종 결과물 |
 
 ## 핵심 구현 사항
@@ -143,18 +155,3 @@ if (pthread_create(&thr, NULL, led_thread, arg) != 0) {
     continue;
 }
 ```
-
-## 빌드 및 실행
-    # 우분투에서 라이브러리 + 서버(라즈베리파이로 자동 전송) / 클라이언트 빌드
-    cd final_project
-    make
-
-    # 라즈베리파이에서 서버 실행
-    sudo ./server
-
-    # 우분투에서 클라이언트 실행
-    ./client \[라즈베리파이 IP\]
-
-    # 데몬 로그 확인
-    sudo tail -f /var/log/syslog | grep device_server
-
