@@ -17,7 +17,6 @@ all: $(LIB)	server client
 	tar -czf final.tar.gz $(LIB) server
 	scp final.tar.gz $(RASPI)
 	ssh $(RASPI_HOST) "cd ~/final && tar -xzf final.tar.gz && rm -f final.tar.gz"
-	rm -f final.tar.gz
 
 $(LIBLED): led.o
 	$(CC) -o $@ $< $(SHARE)
@@ -44,4 +43,4 @@ client: client.c
 	$(CC) client.c -o $@
 
 clean:
-	rm -f *.o *.so server client 
+	rm -f *.o *.so server client final.tar.gz
