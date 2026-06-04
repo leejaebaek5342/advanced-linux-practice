@@ -7,6 +7,8 @@
 #define SPKR    3
 #define TOTAL   32
 
+extern volatile int buzzer_stop;
+
 int notes[] = {
     391, 391, 440, 440, 391, 391, 329, 329,
     391, 391, 329, 329, 293, 293, 293, 0,
@@ -24,9 +26,13 @@ void buzzer_on()
     softToneCreate(SPKR);
     for(int i = 0; i < TOTAL; i++)
     {
+        if(buzzer_stop)
+            break;
+
         softToneWrite(SPKR, notes[i]);
         delay(280);
     }
+    softToneWrite(SPKR, 0);
 }
 
 void buzzer_off()

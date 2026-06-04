@@ -19,6 +19,8 @@
 pthread_mutex_t buz_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t seg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+volatile int buzzer_stop = 0;
+
 typedef struct {
     int efd;
     int sockfd;
@@ -169,7 +171,9 @@ void* buzzer_thread(void* arg)
     buzzer_init();
 
     if (strcmp(cmd, "OFF") == 0) {
+        buzzer_stop = 1;
         buzzer_off();
+
         free(arg);
         dlclose(buz_lib);
         return NULL;
@@ -182,6 +186,7 @@ void* buzzer_thread(void* arg)
     }
 
     if (strcmp(cmd, "ON") == 0) {
+        buzzer_stop = 0;
         buzzer_on();
     }
 
