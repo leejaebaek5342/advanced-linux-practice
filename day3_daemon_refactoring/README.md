@@ -71,6 +71,10 @@ sudo ./server
 
 ## 데몬 로그 확인
     sudo tail -f /var/log/syslog | grep device_server
+    2026-06-04T12:27:18.456258+09:00 jambaek-desktop device_server[18771]: device server daemon started
+    2026-06-04T12:27:18.456615+09:00 jambaek-desktop device_server[18771]: server initialized: port=60000
+    2026-06-04T12:27:19.060216+09:00 jambaek-desktop device_server[18771]: client connected: ip=100.89.181.97, fd=7
+    2026-06-04T12:27:36.792935+09:00 jambaek-desktop device_server[18771]: client disconnected: fd=7
 
 ## 비고
 - 부저 ON 중 OFF 명령 시 trylock으로 즉시 처리
