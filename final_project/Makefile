@@ -4,7 +4,7 @@ RASPI = $(RASPI_HOST):$(RASPI_DIR)
 CC = gcc
 CFLAG = -fPIC -c
 SHARE = -shared -lwiringPi
-OPT = -lwiringPi -ldl -lpthread
+OPT = -lwiringPi -ldl -lpthread -rdynamic
 
 LIBLED = libled.so
 LIBBUZZER = libbuzzer.so
