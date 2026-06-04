@@ -1,4 +1,4 @@
-# Advanced Linux Practice - TCP 장치 제어 시스템
+# raspi-tcp-device-control - TCP 장치 제어 시스템
 
 ## 프로젝트 개요
 Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격 장치 제어 시스템을 구현했습니다.
