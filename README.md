@@ -194,9 +194,9 @@ int getLibDir()
 }
 
 // 각 스레드에서 절대경로로 라이브러리 로딩
-char temp_lib[PATH_MAX + 20];
-sprintf(temp_lib, "%slibled.so", lib_path);
-void* led_lib = load_lib(temp_lib, led_funcs, led_ptrs, 3);
+char lib_led[PATH_MAX + 20];
+sprintf(lib_led, "%slibled.so", lib_path);
+void* led_lib = load_lib(lib_led, led_funcs, led_ptrs, 3);
 ```
 
 ### 세그먼트/부저 중복 실행 문제
