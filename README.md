@@ -16,14 +16,6 @@ Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격
 
 예- `RASPI_HOST = pi@192.168.0.10`
 
-### server.c - 작업 디렉토리
-데몬화 시 사용하는 작업 디렉토리를 서버 실행 파일과 .so 파일이 위치한 경로로 수정합니다.
-
-    #define SERVER_WORKDIR "/home/사용자명/전송받을_디렉토리"
-
-이 경로는 Makefile의 RASPI_DIR과 동일한 위치를 가리켜야 하며,
-서버가 dlopen으로 .so 파일을 로딩할 때 기준이 되는 디렉토리입니다.
-
 ### client.c - 서버 포트 (선택)
 기본 포트는 60000으로 설정되어 있으며 필요 시 수정합니다.
 서버(server.c)의 SERVER_PORT와 동일하게 맞춰야 합니다.
@@ -139,6 +131,11 @@ Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격
 - 작업 디렉토리를 변경하고 표준 입출력을 /dev/null로 리다이렉션합니다.
 - syslog로 서버 동작 및 에러 로그를 기록합니다. (추가기능)
 
+### 실행 경로 자동 감지
+- 데몬화 시 작업 디렉토리가 변경되어도 라이브러리를 정상 로딩하도록 실행 파일 경로를 자동 감지합니다.
+- readlink("/proc/self/exe")로 서버 실행 파일의 절대 경로를 구하고 dirname()으로 디렉토리를 추출하여 lib_path에 저장합니다.
+- 각 스레드는 lib_path와 .so 파일명을 조합한 절대경로로 dlopen을 호출하여, 환경에 관계없이 실행 파일과 같은 위치의 라이브러리를 로딩합니다.
+
 ### 클라이언트 시그널 처리
 - SIGINT(Ctrl+C)만 핸들러로 처리하여 소켓을 닫고 정상 종료합니다.
 - SIGQUIT, SIGTSTP, SIGPIPE, SIGTERM은 무시하여 실행 도중 강제 종료되지 않도록 했습니다.
@@ -162,6 +159,39 @@ Raspberry Pi 4와 Ubuntu(UTM)를 활용하여 TCP 소켓 통신 기반의 원격
 
 
 ## 문제점 및 보완 사항
+
+
+### 데몬화 후 라이브러리 경로 문제
+- 서버를 데몬화하면 `chdir("/")`로 작업 디렉토리가 루트로 변경됩니다.
+- 이 상태에서 `dlopen("./libled.so", ...)`처럼 상대경로로 라이브러리를 로딩하면 루트(/)에서 .so 파일을 찾기 때문에 로딩에 실패합니다.
+- 초기에는 `#define SERVER_WORKDIR "/home/jambaek/fortest"`처럼 작업 디렉토리를 절대경로로 하드코딩했으나, 이 방식은 다른 사용자 환경에서는 경로가 달라 동작하지 않는 문제가 있었습니다.
+- 이를 해결하기 위해 `readlink("/proc/self/exe", ...)`로 서버 실행 파일의 절대 경로를 구하고, `dirname()`으로 실행 파일이 위치한 디렉토리를 추출하여 `lib_path`에 저장했습니다.
+- 각 스레드에서 `lib_path`와 라이브러리 파일명을 조합하여 절대경로로 dlopen을 호출함으로써, 데몬화로 작업 디렉토리가 변경되더라도 실행 파일과 같은 위치의 .so 파일을 정확히 로딩할 수 있도록 개선했습니다.
+- 이를 통해 사용자 환경에 관계없이 서버 실행 파일과 .so 파일이 같은 디렉토리에 있기만 하면 정상 동작하도록 경로 의존성을 제거했습니다.
+
+```c
+char lib_path[PATH_MAX];
+
+int getLibDir()
+{
+    char exe_path[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
+
+    if(len != -1)
+    {
+        exe_path[len] = '\0';
+        char* dir = dirname(exe_path);
+        sprintf(lib_path, "%s/", dir);
+        return 0;
+    }
+    return -1;
+}
+
+// 각 스레드에서 절대경로로 라이브러리 로딩
+char temp_lib[PATH_MAX + 20];
+sprintf(temp_lib, "%slibled.so", lib_path);
+void* led_lib = load_lib(temp_lib, led_funcs, led_ptrs, 3);
+```
 
 ### 세그먼트/부저 중복 실행 문제
 - 세그먼트 카운트다운 중 새로운 SEG 명령이 오거나, 부저 재생 중 새로운 BUZZER 명령이 오면
