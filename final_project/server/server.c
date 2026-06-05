@@ -151,12 +151,12 @@ void* load_lib(const char* path, const char** func_names, void** func_ptrs, int 
 
 void* led_thread(void* arg)
 {
-    char temp_lib[PATH_MAX + 20];
+    char lib_led[PATH_MAX + 20];
     void* led_ptrs[3];
     const char* led_funcs[] = {"led_init", "led_on_off", "led_brightness"};
 
-    sprintf(temp_lib,"%slibled.so",lib_path);
-    void* led_lib = load_lib(temp_lib, led_funcs, led_ptrs, 3);
+    sprintf(lib_led,"%slibled.so",lib_path);
+    void* led_lib = load_lib(lib_led, led_funcs, led_ptrs, 3);
     if (!led_lib) {
         free(arg);
         return NULL;
@@ -182,12 +182,12 @@ void* led_thread(void* arg)
 
 void* buzzer_thread(void* arg)
 {
-    char temp_lib[PATH_MAX + 20];
+    char lib_buz[PATH_MAX + 20];
     void* buz_ptrs[3];
     const char* buz_funcs[] = {"buzzer_init", "buzzer_on", "buzzer_off"};
 
-    sprintf(temp_lib,"%slibbuzzer.so",lib_path);
-    void* buz_lib = load_lib(temp_lib, buz_funcs, buz_ptrs, 3);
+    sprintf(lib_buz,"%slibbuzzer.so",lib_path);
+    void* buz_lib = load_lib(lib_buz, buz_funcs, buz_ptrs, 3);
     if (!buz_lib) {
         free(arg);
         return NULL;
@@ -230,12 +230,12 @@ void* buzzer_thread(void* arg)
 
 void* cds_thread(void* arg)
 {
-    char temp_lib[PATH_MAX + 20];
+    char lib_cds[PATH_MAX + 20];
     void* cds_ptrs[2];
     const char* cds_funcs[] = {"cds_init", "cds_read"};
 
-    sprintf(temp_lib,"%slibcds.so",lib_path);
-    void* cds_lib = load_lib(temp_lib, cds_funcs, cds_ptrs, 2);
+    sprintf(lib_cds,"%slibcds.so",lib_path);
+    void* cds_lib = load_lib(lib_cds, cds_funcs, cds_ptrs, 2);
     if (!cds_lib) {
         free(arg);
         return NULL;
@@ -290,12 +290,12 @@ void* seg_thread(void* arg)
         free(arg);
         return NULL;
     }
-    char temp_lib[PATH_MAX + 20];
+    char lib_seg[PATH_MAX + 20];
     void* seg_ptrs[2];
     const char* seg_funcs[] = {"seg_init", "seg_display"};
 
-    sprintf(temp_lib,"%slibseg.so",lib_path);
-    void* seg_lib = load_lib(temp_lib, seg_funcs, seg_ptrs, 2);
+    sprintf(lib_seg,"%slibseg.so",lib_path);
+    void* seg_lib = load_lib(lib_seg, seg_funcs, seg_ptrs, 2);
     if (!seg_lib) {
         free(arg);
         pthread_mutex_unlock(&seg_mutex);
