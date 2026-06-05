@@ -18,24 +18,13 @@ void clear_input(void)
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
-void on_sigint(int sig)
-{
-    (void)sig;
-    printf("\n클라이언트 종료\n");
-
-    if(sockfd != -1)
-        close(sockfd);
-
-    exit(0);
-}
-
 void signal_setup()
 {
-    signal(SIGINT,  on_sigint);   
-    signal(SIGQUIT, SIG_IGN);     
-    signal(SIGTSTP, SIG_IGN);     
-    signal(SIGPIPE, SIG_IGN);     
-    signal(SIGTERM, SIG_IGN);
+    sigset_t set;
+
+    sigfillset(&set);
+    sigdelset(&set,SIGINT);
+    sigprocmask(SIG_SETMASK,&set,NULL);
 }
 
 
